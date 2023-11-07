@@ -19,7 +19,7 @@ cell(X,Y,C,O).
 
 - X - X-Coordinate
 - Y - Y-Coordinate of the cell
-- C - [Cell Type](Flatland.md#cell-types) represented as an integer
+- C - Cell Type represented as an integer
 - O - Orientation (N=0, E=1, S=2, W=3)
 
 <details>
@@ -41,7 +41,7 @@ At each decision step the agent has to pick an action from their action space. T
 possible_action(C,Oa,A,OC).
 ```
 
-- C - [Cell Type](Flatland.md#cell-types) represented as an integer
+- C - Cell Type represented as an integer
 - O - Orientation of the **agent**
 - A - Action to be performed
 - OC - Orientation change induced by the action
