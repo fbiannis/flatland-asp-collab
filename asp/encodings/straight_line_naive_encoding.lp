@@ -2,13 +2,17 @@
 % it is specifically for straight line maps, 
 % so it only contains rules for straight tracks.
 
+% Initial position of the agent
+agent_position(I,X,Y,0):- agent(I,X,Y,_,_).
+agent_orientation(I,O,0):- agent(I,_,_,O,_).
+
 % At each time step the agent has to choose one
 % action from all actions possible at the location
 % of the agent given its orientation and cell type.
 {agent_action(I,A,T,OC):possible_action(C,F,A,OC)} = 1:-  agent_position(I,X,Y,T), 
                                                     agent_orientation(I,O,T), 
                                                     cell(X,Y,C,O'),
-                                                    agent_state(I,0,T),
+                                                    not agent_done(I,T),
                                                     step_limit(L),
                                                     F=(4+O-O')\4, 
                                                     T<L.
@@ -43,15 +47,11 @@ agent_position(I,X',Y',T+1) :-  agent_action(I,A,T,OC),
                                 X'=X-(O - 2)* (O \ 2), 
                                 Y'=Y+(O - 1)* ((O+1) \ 2).
 
-% As long as the agent is not at their target
-% the state remains 0 (has not arrived yet), otherwise
-% the state changes to 1 (has arrived).
-agent_state(I,0,T) :- agent_position(I,X,Y,T), agent_target(I,X',Y'),X-X'+Y-Y'!=0.
-agent_state(I,1,T) :- agent_position(I,X,Y,T), agent_target(I,X',Y'),X-X'+Y-Y'==0.
+% The agent is done as soon as they arrive at their target
+agent_done(I,T) :- agent_position(I,X,Y,T), agent_target(I,X,Y).
 
-% At time step greater than 4 the agent can not be at
-% any position which is not the position of the target.
-:- agent_state(I,0,T),step_limit(L), T>(L-1).
+% Every agent must be done.
+:- not agent_done(I,_), agent(I,_,_,_,_). 
 
 #show agent_action/4.
 #show agent_position/4.
