@@ -53,7 +53,7 @@ class BaseInstance:
         header = inspect.cleandoc(
             f"""% Cells are defined as
                 %   cell(X,Y,C,O).
-                %  
+                %
                 %   - X: X coordinate of position
                 %   - Y: Y coordinate of position
                 %   - C: Type of the cell
@@ -114,11 +114,13 @@ class BaseInstance:
             for agent_orientation, row in enumerate(actions):
                 # Halting is always possible
                 # for now we add it like this for every cell
-                possible_action = f"possible_action({cell_type.value},{agent_orientation},{Action.HALT.value},{OrientationChange.KEEP.value})."
+                possible_action = f"possible_action({cell_type.value},{agent_orientation},{
+                    Action.HALT.value},{OrientationChange.KEEP.value})."
                 possible_actions.append(possible_action)
 
                 for action in row:
-                    possible_action = f"possible_action({cell_type.value},{agent_orientation},{action[0].value},{action[1].value})."
+                    possible_action = f"possible_action({cell_type.value},{agent_orientation},{
+                        action[0].value},{action[1].value})."
                     possible_actions.append(possible_action)
         return possible_actions
 
@@ -131,7 +133,7 @@ class BaseInstance:
                 %   - X: X coordinate of position
                 %   - Y: Y coordinate of position
                 %   - O: Orientation
-                %   - D: Latest departure
+                %   - D: Earliest departure
                 %
                 %   agent_target(I,X,Y).
                 %
@@ -153,7 +155,7 @@ class BaseInstance:
                 - X: X coordinate of position
                 - Y: Y coordinate of position
                 - O: Orientation
-                - D: Latest departure
+                - D: Earliest departure
         """
         return f'agent({agent.id},{agent.position.x},{agent.position.y},{agent.orientation.value},{agent.earliest_departure}).'
 
