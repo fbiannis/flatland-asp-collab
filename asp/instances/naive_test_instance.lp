@@ -45,6 +45,11 @@ agent_target(0,7,3).
 %   - C: Type of cell
 %   - O: Orientation of the agent entering the cell
 %   - A: One of the actions the agent can choose
+%       - 0 = No Action
+%       - 1 = Left 
+%       - 2 = Forward
+%       - 3 = Right
+%       - 4 = Stop
 %   - OC: Change in orientation of the agent after taking action A
 possible_action(1, 0, 4, 0).
 possible_action(1, 0, 2, 0).

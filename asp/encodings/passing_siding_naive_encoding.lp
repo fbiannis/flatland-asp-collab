@@ -1,7 +1,22 @@
 % This is a basic variant of the naive encoding
 % it is specifically for straight line maps, 
 % so it only contains rules for straight tracks.
-
+% I = Agent ID
+% A = Action 
+%   0 = No Action
+%   1 = Left 
+%   2 = Forward
+%   3 = Right
+%   4 = Stop
+% X = X Coordinate
+% Y = Y Coordinate
+% O = Agent Orientation
+% O' = Cell Orientation
+% OC = Change in orientation of the agent after taking action A
+% RO = Relative Cell Orientation (between Cell and Agent)
+% T = Timestep
+% C = Cell Type
+% L = Step Limit
 % Initial position of the agent
 agent_position(I,X,Y,0):- agent(I,X,Y,_,_).
 agent_orientation(I,O,0):- agent(I,_,_,O,_).
@@ -9,12 +24,12 @@ agent_orientation(I,O,0):- agent(I,_,_,O,_).
 % At each time step the agent has to choose one
 % action from all actions possible at the location
 % of the agent given its orientation and cell type.
-{agent_action(I,A,T,OC):possible_action(C,F,A,OC)} = 1:-  agent_position(I,X,Y,T), 
+{agent_action(I,A,T,OC):possible_action(C,RO,A,OC)} = 1:-  agent_position(I,X,Y,T), 
                                                     agent_orientation(I,O,T), 
                                                     cell(X,Y,C,O'),
                                                     not agent_done(I,T),
                                                     step_limit(L),
-                                                    F=(4+O-O')\4,
+                                                    RO=(|O-O'|)\4,
                                                     T<L.
 
 % Update orientations according to action taken and current orientation
