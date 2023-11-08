@@ -1,4 +1,5 @@
 
+import msvcrt
 from clingo.control import Control
 from flatland.envs.line_generators import sparse_line_generator
 from flatland.envs.observations import GlobalObsForRailEnv
@@ -27,6 +28,12 @@ def create_environment() -> RailEnv:
 
     return env
 
+def hold_window_for_input(env_renderer):
+    print("Press any button in the terminal to exit")
+    while True:
+        env_renderer.render_env(show=True, show_predictions=True, show_rowcols=True)
+        if msvcrt.kbhit():
+            break
 
 if __name__ == '__main__':
     env = create_environment()
@@ -37,3 +44,4 @@ if __name__ == '__main__':
     fa = FlatlandASP(env=env, env_renderer=env_renderer, clingo_control=ctl)
     fa.solve()
     fa.simulate_environment()
+    hold_window_for_input(env_renderer)
