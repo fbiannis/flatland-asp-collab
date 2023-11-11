@@ -5,7 +5,9 @@ Since the main idea of Flatland is to have **agents** choose **actions**, based 
 <summary>Table of Contents</summary>
 
 1. [Cells](#cells)
+1. [Possible Actions](#possible-actions)
 1. [Agents](#agents)
+1. [Example Instance](#example-instance)
 
 </details>
 
