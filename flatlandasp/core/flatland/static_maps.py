@@ -276,6 +276,7 @@ def long_multiple_switch_map() -> Tuple[GridTransitionMap, dict[str, dict[str, A
     sw_simple_switch = cell_types[CellType.SIMPLE_SWITCH.value]
     se_simple_switch = cell_types[CellType.SIMPLE_SWITCH_MIRRORED.value]
     s_dead_end = cell_types[CellType.DEAD_END.value]
+    sn_straight = cell_types[CellType.STRAIGHT.value]
     
     wn_simple_switch = transitions.rotate_transition(sw_simple_switch, 90)
     en_simple_switch = transitions.rotate_transition(se_simple_switch, 270)
@@ -286,6 +287,7 @@ def long_multiple_switch_map() -> Tuple[GridTransitionMap, dict[str, dict[str, A
 
     grid = np.array(
         [[e_dead_end] + [es_simple_switch] + [ws_simple_switch] + [es_simple_switch] + [ws_simple_switch] + [es_simple_switch] + [ws_simple_switch] + [es_simple_switch] + [ws_simple_switch] + [es_simple_switch] + [ws_simple_switch] + [w_dead_end]] +
+        [[empty] + [sn_straight] * 10 + [empty]] + 
         [[e_dead_end] + [en_simple_switch] + [wn_simple_switch] + [en_simple_switch] + [wn_simple_switch] + [en_simple_switch] + [wn_simple_switch] + [en_simple_switch] + [wn_simple_switch] + [en_simple_switch] + [wn_simple_switch] + [w_dead_end]], dtype=np.uint16
     )
     print(grid)
@@ -294,15 +296,15 @@ def long_multiple_switch_map() -> Tuple[GridTransitionMap, dict[str, dict[str, A
                                             transitions=transitions)
     grid_transition_map.grid = grid
 
-    city_positions = [(0, 0), (1, 0), (0, 11), (1, 11)]
+    city_positions = [(0, 0), (2, 0), (0, 11), (2, 11)]
 
     city_orientations = [1, 1, 3, 3]
 
     train_stations = [
         [((0, 0), 0)],
-        [((1, 1), 0)],
+        [((2, 0), 0)],
         [((0, 11), 0)],
-        [((1, 11), 0)],
+        [((2, 11), 0)],
     ]
     agents_hints = {'city_positions': city_positions,
                     'train_stations': train_stations,
@@ -311,3 +313,4 @@ def long_multiple_switch_map() -> Tuple[GridTransitionMap, dict[str, dict[str, A
 
     optionals = {'agents_hints': agents_hints}
     return grid_transition_map, optionals
+
