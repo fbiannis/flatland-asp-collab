@@ -223,3 +223,46 @@ def simple_switch_map() -> Tuple[GridTransitionMap, dict[str, dict[str, Any]]]:
 
     optionals = {'agents_hints': agents_hints}
     return grid_transition_map, optionals
+
+def impossible_loop() -> Tuple[GridTransitionMap, dict[str, dict[str, Any]]]:
+    transitions = RailEnvTransitions()
+    cell_types = transitions.transition_list
+    empty = cell_types[CellType.EMPTY.value]
+
+    se_turn = cell_types[CellType.SIMPLE_TURN_RIGHT.value]
+    sw_simple_switch = cell_types[CellType.SIMPLE_SWITCH.value]
+    sn_straight = cell_types[CellType.STRAIGHT.value]
+    se_simple_switch_mirrored = cell_types[CellType.SIMPLE_SWITCH_MIRRORED.value]
+    sn_dead_end = cell_types[CellType.DEAD_END.value]
+    we_dead_end = transitions.rotate_transition(sn_dead_end, 90)
+    en_turn = transitions.rotate_transition(se_turn, 270)
+    ws_turn = transitions.rotate_transition(se_turn, 180)
+
+    grid = np.array(
+        [[empty] + [sn_dead_end] + [empty]] +
+        [[se_turn] + [sw_simple_switch] + [empty]] +
+        [[sn_straight] + [se_simple_switch_mirrored] + [we_dead_end]] +
+        [[en_turn] + [ws_turn] + [empty]], dtype=np.uint16
+    )
+    print(grid)
+    grid_transition_map = GridTransitionMap(width=grid.shape[1],
+                                            height=grid.shape[0],
+                                            transitions=transitions)
+    grid_transition_map.grid = grid
+
+    city_positions = [(0, 1), (2, 2)]
+
+    city_orientations = [2, 3]
+
+    train_stations = [
+        [((0, 1), 0)],
+        [((2, 2), 0)],
+    ]
+
+    agents_hints = {'city_positions': city_positions,
+                    'train_stations': train_stations,
+                    'city_orientations': city_orientations
+                    }
+
+    optionals = {'agents_hints': agents_hints}
+    return grid_transition_map, optionals
