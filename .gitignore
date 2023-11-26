@@ -5,3 +5,4 @@ __pycache__/
 *.egg-info/
 
 .vscode/
+asp/instances/naive_test_instance.lp
