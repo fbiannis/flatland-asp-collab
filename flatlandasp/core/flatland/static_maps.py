@@ -145,6 +145,9 @@ def multi_passing_siding_map() -> Tuple[GridTransitionMap, dict[str, dict[str, A
 
     sn_straight = cell_types[CellType.STRAIGHT.value]
     we_straight = transitions.rotate_transition(sn_straight, 90)
+    sn_dead_end = cell_types[CellType.DEAD_END.value]
+    we_dead_end = transitions.rotate_transition(sn_dead_end, 90)
+    ew_dead_end = transitions.rotate_transition(sn_dead_end, 270)
     se_turn = cell_types[CellType.SIMPLE_TURN_RIGHT.value]
     ws_turn = transitions.rotate_transition(se_turn, 90)
     sw_simple_switch = cell_types[CellType.SIMPLE_SWITCH.value]
@@ -157,8 +160,8 @@ def multi_passing_siding_map() -> Tuple[GridTransitionMap, dict[str, dict[str, A
         [[empty]*5 + [se_turn] + [we_straight]*2 + [ws_turn] + [empty]*5] +
         [[empty]*5 + [se_simple_switch] + [we_straight]*2 + [sw_simple_switch] + [empty]*5] +
         [[empty]*5 + [se_simple_switch] + [we_straight]*2 + [sw_simple_switch] + [empty]*5] +
-        [[empty] + [we_straight]*4+[en_simple_switch] +
-            [we_straight]*2+[wn_simple_switch] + [we_straight]*4 + [empty]] +
+        [[empty] + [ew_dead_end] + [we_straight]*3+[en_simple_switch] +
+            [we_straight]*2+[wn_simple_switch] + [we_straight]*3 + [we_dead_end] + [empty]] +
         [[empty] * (14)], dtype=np.uint16
     )
     print(grid)
