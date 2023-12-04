@@ -46,17 +46,17 @@ There are **5** possible actions:
 `3` - Turn right  
 `4` - Halt  
 
-## `possible_action(C,RO,A,OC)`
+## `possible_action(C,O,A,OC)`
 
-Generic fact that states what actions an [agent](#agents) can take given:  
+Generic fact that states what actions an *agent* can take given:  
 `C` - A cell type  
 `O` - Orientation of the agent  
 `A` - The type of action the agent can take  
-`OC` - The orientation change experienced when taking action `A`
+`OC` - The orientation change experienced by the agent when taking action `A`
 
 ## `agent_action(I,A,T,OC)`
 
-Term generated during the grounding and used during the solving process that states an agent `I`'s action on time step `T` with the incurred orientation change `OC`.
+Term generated during the grounding and used during the solving process that states an agent `I`'s action `A` on time step `T` alongside the resulting orientation change `OC`.
 
 # Collision Handling
 
@@ -88,7 +88,8 @@ There *cannot* be any junctions on the path of a connection.
 
 ## `connection_occupancy(IC,IA,D,T)`
 
-The `connection_occupany` term states if an agent with the ID `IA` is currently occupying a connection `IC` at time point `T`. If so, it states which direction the agent is going along the connection with `D`, taking either one of two values:
+The `connection_occupany` term states that an agent with the ID `IA` is currently occupying a connection `IC` at time point `T`.  
+It also states which direction the agent is going along the connection with `D`, taking either one of two values:
 
 `0` - The agent is traveling 'down' from `X1,Y1` to `X2,Y2`  
 `1` - The agent is traveling 'up' from `X2,Y2` to `X1,Y1`
