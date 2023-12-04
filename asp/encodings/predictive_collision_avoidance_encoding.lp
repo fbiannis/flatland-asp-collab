@@ -41,17 +41,16 @@ junction(X,Y) :- cell(X,Y,10,_).
 % Build paths between junctions. 
 % First start with straight lines and curves.
 
-path(X1,Y1,X2,Y2,1) :- cell(X1,Y1,1,O), X2=X1+(O\2), Y2=Y1+((O+1)\2), not junction(X2,Y2).
-path(X1,Y1,X2,Y2,1) :- cell(X1,Y1,1,O), X2=X1-(O\2), Y2=Y1-((O+1)\2), not junction(X2,Y2).
-path(X1,Y1,X2,Y2,1) :- cell(X1,Y1,8,O), X2=X1+((1-O)\2), Y2=Y1+((-1)**(1+O))*(O\2), not junction(X2,Y2).
+path(X1,Y1,X2,Y2) :- cell(X1,Y1,1,O), X2=X1+(O\2), Y2=Y1+((O+1)\2), not junction(X2,Y2).
+path(X1,Y1,X2,Y2) :- cell(X1,Y1,1,O), X2=X1-(O\2), Y2=Y1-((O+1)\2), not junction(X2,Y2).
+path(X1,Y1,X2,Y2) :- cell(X1,Y1,8,O), X2=X1+((1-O)\2), Y2=Y1+((-1)**(1+O))*(O\2), not junction(X2,Y2).
 
 % Recursively extend paths, while removing duplicates.
 
-path(X1,Y1,X2,Y2,1) :- path(X1,Y1,X',Y',L1), path(X',Y',X2,Y2,L2).
-:- path(X1,Y1,X2,Y2,L), path(X2,Y2,X1,Y1,L), X1!=X2; Y1!=Y2.
-
-% Not working as intended
-% :- path(X1,Y1,X2,Y2,L), X1=X2, Y1=Y2.
+path(X1,Y1,X2,Y2) :- path(X1,Y1,X',Y'), path(X',Y',X2,Y2), #sum{1:X1!=X2; 1:Y1!=Y2}>=1.
+path(X1,Y1,X2,Y2) :- path(X1,Y1,X',Y'), path(X2,Y2,X',Y'), #sum{1:X1!=X2; 1:Y1!=Y2}>=1.
+path(X1,Y1,X2,Y2) :- path(X',Y',X1,Y1), path(X',Y',X2,Y2), #sum{1:X1!=X2; 1:Y1!=Y2}>=1.
+% :- path(X1,Y1,X2,Y2), path(X2,Y2,X1,Y1), #sum{1:X1!=X2; 1:Y1!=Y2}>=1.
 
 % Update orientations according to action taken and current orientation
 agent_orientation(I,O,T+1) :- agent_action(I,A,T,OC), agent_orientation(I,O',T), O=(O'+OC)\4.
@@ -98,4 +97,4 @@ agent_done(I,T) :- agent_position(I,X,Y,T), agent_target(I,X,Y).
 #show agent_orientation/3.
 #show agent_target/3.
 #show junction/2.
-#show path/5.
+#show path/4.
