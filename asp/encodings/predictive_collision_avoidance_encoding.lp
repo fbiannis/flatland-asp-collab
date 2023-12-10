@@ -38,19 +38,37 @@ agent_orientation(I,O,0):- agent(I,_,_,O,_).
 junction(X,Y) :- cell(X,Y,2..7,_).
 junction(X,Y) :- cell(X,Y,10,_).
 
+% Helper
+dir_diff(0, 0, -1).
+dir_diff(1, 1, 0). 
+dir_diff(2, 0, 1). 
+dir_diff(3, -1, 0).
+
 % Build paths between junctions. 
 % First start with straight lines and curves.
 
-path(X1,Y1,X2,Y2) :- cell(X1,Y1,1,O), X2=X1+(O\2), Y2=Y1+((O+1)\2), not junction(X2,Y2).
-path(X1,Y1,X2,Y2) :- cell(X1,Y1,1,O), X2=X1-(O\2), Y2=Y1-((O+1)\2), not junction(X2,Y2).
-path(X1,Y1,X2,Y2) :- cell(X1,Y1,8,O), X2=X1+((1-O)\2), Y2=Y1+((-1)**(1+O))*(O\2), not junction(X2,Y2).
+% Simple switch - standard
+path(XO,YO,XO+XD,YO+YD,O') :- cell(XO,YO,2,OC), O'=(OC+2..4)\4, dir_diff(O',XD,YD).
 
-% Recursively extend paths, while removing duplicates.
+% Simple switch - mirrored
+path(XO,YO,XO+XD,YO+YD,O') :- cell(XO,YO,10,OC), O'=(OC+0..2)\4, dir_diff(O',XD,YD).
 
-path(X1,Y1,X2,Y2) :- path(X1,Y1,X',Y'), path(X',Y',X2,Y2), #sum{1:X1!=X2; 1:Y1!=Y2}>=1.
-path(X1,Y1,X2,Y2) :- path(X1,Y1,X',Y'), path(X2,Y2,X',Y'), #sum{1:X1!=X2; 1:Y1!=Y2}>=1.
-path(X1,Y1,X2,Y2) :- path(X',Y',X1,Y1), path(X',Y',X2,Y2), #sum{1:X1!=X2; 1:Y1!=Y2}>=1.
-% :- path(X1,Y1,X2,Y2), path(X2,Y2,X1,Y1), #sum{1:X1!=X2; 1:Y1!=Y2}>=1.
+% Diamond crossing (+slips)
+path(XO,YO,XO+XD,YO+YD,O') :- cell(XO,YO,3..5,OC), O'=(OC+0..4)\4, dir_diff(O',XD,YD).
+
+% Symmetrical fork
+path(XO,YO,XO+XD,YO+YD,O') :- cell(XO,YO,6,OC), O'=(OC+1..3)\4, dir_diff(O',XD,YD).
+
+% Dead end
+path(XO,YO,XO+XD,YO+YD,O') :- cell(XO,YO,7,OC), O'=(OC+2)\4, dir_diff(O',XD,YD).
+
+% Extend paths
+path(XO,YO,X+XD,Y+YD,O) :- cell(X,Y,1,O), dir_diff(O,XD,YD), path(XO,YO,X,Y,O).
+path(XO,YO,X+XD,Y+YD,O') :- cell(X,Y,8,OC), dir_diff(O',XD,YD), path(XO,YO,X,Y,OI), O'=(OI+1+2*(OC\2-OI\2))\4.
+path(XO,YO,X+XD,Y+YD,O') :- cell(X,Y,9,OC), dir_diff(O',XD,YD), path(XO,YO,X,Y,OI), O'=(OI+3-2*(OC\2-OI\2))\4.
+
+% Finish connections
+connection(X1,Y1,X2,Y2,0,0) :- path(X1,Y1,X2,Y2,_), not connection(X2,Y2,X1,Y1,_,_), junction(X2,Y2).
 
 % Update orientations according to action taken and current orientation
 agent_orientation(I,O,T+1) :- agent_action(I,A,T,OC), agent_orientation(I,O',T), O=(O'+OC)\4.
@@ -97,4 +115,4 @@ agent_done(I,T) :- agent_position(I,X,Y,T), agent_target(I,X,Y).
 #show agent_orientation/3.
 #show agent_target/3.
 #show junction/2.
-#show path/4.
+#show path/5.
