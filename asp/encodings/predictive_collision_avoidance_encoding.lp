@@ -68,10 +68,14 @@ path(XO,YO,X+XD,Y+YD,O') :- cell(X,Y,8,OC), dir_diff(O',XD,YD), path(XO,YO,X,Y,O
 path(XO,YO,X+XD,Y+YD,O') :- cell(X,Y,9,OC), dir_diff(O',XD,YD), path(XO,YO,X,Y,OI), O'=(OI+3-2*(OC\2-OI\2))\4.
 
 % Finish connections
-connection(X1,Y1,X2,Y2,0,0) :- path(X1,Y1,X2,Y2,_), not connection(X2,Y2,X1,Y1,_,_), junction(X2,Y2).
+connection(X1,Y1,X2,Y2) :- path(X1,Y1,X2,Y2,_), not connection(X2,Y2,X1,Y1), junction(X2,Y2).
 
 % Update orientations according to action taken and current orientation
 agent_orientation(I,O,T+1) :- agent_action(I,A,T,OC), agent_orientation(I,O',T), O=(O'+OC)\4.
+
+% Predict collisions
+connection_occupany(X1,Y1,X2,Y2,T,I,0) :- connection(X1,Y1,X2,Y2), path(X1,Y1,X2,Y2,O), agent_orientation(I,O,T+1), agent_position(I,X1,Y1,T).
+connection_occupany(X1,Y1,X2,Y2,T,I,1) :- connection(X1,Y1,X2,Y2), path(X1,Y1,X2,Y2,O), agent_orientation(I,O,T+1), agent_position(I,X2,Y2,T).
 
 % Update positions
 %
@@ -116,3 +120,5 @@ agent_done(I,T) :- agent_position(I,X,Y,T), agent_target(I,X,Y).
 #show agent_target/3.
 #show junction/2.
 #show path/5.
+#show connection/4.
+#show connection_occupany/6.

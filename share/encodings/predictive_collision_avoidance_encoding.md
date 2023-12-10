@@ -80,17 +80,16 @@ Namely, any cell in which either a decision can be made *beyond* halting and goi
 A **path** is a pair of coordinates (`X1,Y1` and `X2,Y2`) connected by tracks. They lie between *junctions*, never including them.  
 **Paths** are iteratively constructed and are used to generate *connections*.
 
-## `connection(I,X1,Y1,X2,Y2)`
+## `connection(X1,Y1,X2,Y2)`
 
-**Connections** (identified with an ID `I`) are the unique *paths* between junctions directly neigboring one another by *paths*.  
+**Connections** are the unique *paths* between junctions directly neigboring one another by *paths*.  
 They are represented by the two coordinates one cell ahead of their enclosing junctions at either end (`X1,Y1` and `X2,Y2` respectively).  
 There *cannot* be any junctions on the path of a connection.
 
-## `connection_occupancy(IC,IA,D,T)`
+## `connection_occupancy(X1,Y1,X2,Y2,T,I,D)`
 
-The `connection_occupany` term states that an agent with the ID `IA` is currently occupying a connection `IC` at time point `T`.  
-It also states which direction the agent is going along the connection with `D`, taking either one of two values:
-
+The `connection_occupany` term states that an agent with the ID `I` is currently occupying a connection going from `X1,Y1` to `X2,Y2` at time point `T`.  
+It also states which direction the agent is going along the connection with `D`, taking either one of two values:  
 `0` - The agent is traveling 'down' from `X1,Y1` to `X2,Y2`  
 `1` - The agent is traveling 'up' from `X2,Y2` to `X1,Y1`
 
