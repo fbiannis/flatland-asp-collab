@@ -107,7 +107,7 @@ path(XO,YO,O',XO+XD,YO+YD,O',0) :- cell(XO,YO,7,OC), O'=(OC+2)\4, dir_diff(O',XD
 
 % Extend paths
 % Across straight tracks
-path(XO,YO,OO,X+XD,Y+YD,O,L+1) :- cell(X,Y,1,O), dir_diff(O,XD,YD), path(XO,YO,OO,X,Y,O,L).
+path(XO,YO,OO,X+XD,Y+YD,O,L+1) :- cell(X,Y,1,OC), dir_diff(O,XD,YD), path(XO,YO,OO,X,Y,O,L).
 % Across curved tracks
 path(XO,YO,OO,X+XD,Y+YD,O',L+1) :- cell(X,Y,8,OC), dir_diff(O',XD,YD), path(XO,YO,OO,X,Y,OI,L), O'=(OI+1+2*(OC\2-OI\2))\4.
 path(XO,YO,OO,X+XD,Y+YD,O',L+1) :- cell(X,Y,9,OC), dir_diff(O',XD,YD), path(XO,YO,OO,X,Y,OI,L), O'=(OI+3-2*(OC\2-OI\2))\4.
@@ -116,7 +116,7 @@ path(XO,YO,OO,X+XD,Y+YD,O',L+1) :- cell(X,Y,9,OC), dir_diff(O',XD,YD), path(XO,Y
 connection(X1,Y1,O1,X2,Y2,O2,L+1) :- path(X1,Y1,O1,X2,Y2,O2,L), junction(X2,Y2).
 
 
-1{chosen_path(I,X1,Y1,X2,Y2,O,L):connection(X1,Y1,X2,Y2,(O1-OC)\4,L)}1 :- chosen_path(I,_,_,X1,Y1,O,_), cell(X1,Y1,C,OC), link(C,O1,O2)
+%1{chosen_path(I,X1,Y1,X2,Y2,O,L):connection(X1,Y1,X2,Y2,(O1-OC)\4,L)}1 :- chosen_path(I,_,_,X1,Y1,O,_), cell(X1,Y1,C,OC), link(C,O1,O2)
 
 
 %#show junction/2.
