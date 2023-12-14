@@ -25,7 +25,7 @@ cell(10,4,1,1).
 cell(11,4,1,1).
 cell(12,4,7,1).
 
-chosen_path(1,1,4,1,5,4,1,4)
+chosen_path(1,1,4,1,5,4,1,4).
 
 % Define junction points:= Points at which lines end/
 % All cell types, that are not empty straight or curved tracks.
@@ -127,13 +127,13 @@ path(XO,YO,OO,X+XD,Y+YD,O',L+1) :- cell(X,Y,9,OC), dir_diff(O',XD,YD), path(XO,Y
 connection(X1,Y1,O1,X2,Y2,O2,L+1) :- path(X1,Y1,O1,X2,Y2,O2,L), junction(X2,Y2).
 
 % Chooses 1 possible path from the current junction
-% O : Current orientation of the agent
-% O1 : Outgoing orientation of the agent
-% O2 : Final orientation of the agent after the path
-1{chosen_path(I,X1,Y1,O1,X2,Y2,O2,L):connection(X1,Y1,O1,X2,Y2,O2,L)}1 :- chosen_path(I,_,_,_,X1,Y1,O,_), cell(X1,Y1,C,OC), link(C,(O-OC)\4,(O1-OC)\4)
+% O = Current orientation of the agent
+% O1 = Outgoing orientation of the agent
+% O2 = Final orientation of the agent after the path
+1{chosen_connection(I,X1,Y1,O1,X2,Y2,O2,L):connection(X1,Y1,O1,X2,Y2,O2,L)}1 :- chosen_connection(I,_,_,_,X1,Y1,O,_), cell(X1,Y1,C,OC), link(C,O',O1'), O'=(O-OC)\4, O1=(O1'+OC)\4.
 
 
 %#show junction/2.
 %#show path/7.
-#show connection/7.
-%#show chosen_path/7.
+%#show connection/7.
+#show chosen_connection/8.
