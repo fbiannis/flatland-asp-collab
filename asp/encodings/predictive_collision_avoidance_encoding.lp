@@ -1,5 +1,7 @@
 %%%%%%%%%%%%%% TEMP %%%%%%%%%%%%%%%
 
+step_limit(20).
+
 cell(5,1,9,3).
 cell(6,1,1,1).
 cell(7,1,1,1).
@@ -25,7 +27,8 @@ cell(10,4,1,1).
 cell(11,4,1,1).
 cell(12,4,7,1).
 
-chosen_path(1,1,4,1,5,4,1,4).
+agent(0,12,4,1,0).
+agent_target(0,12,4).
 
 % Define junction points:= Points at which lines end/
 % All cell types, that are not empty straight or curved tracks.
@@ -126,14 +129,29 @@ path(XO,YO,OO,X+XD,Y+YD,O',L+1) :- cell(X,Y,9,OC), dir_diff(O',XD,YD), path(XO,Y
 % Finish connections
 connection(X1,Y1,O1,X2,Y2,O2,L+1) :- path(X1,Y1,O1,X2,Y2,O2,L), junction(X2,Y2).
 
+% Initialize agents on their junctions
+
+chosen_connection(I,X,Y,O,0,X,Y,O,0) :- agent(I,X,Y,O,_).
+
 % Chooses 1 possible path from the current junction
 % O = Current orientation of the agent
 % O1 = Outgoing orientation of the agent
 % O2 = Final orientation of the agent after the path
-1{chosen_connection(I,X1,Y1,O1,X2,Y2,O2,L):connection(X1,Y1,O1,X2,Y2,O2,L)}1 :- chosen_connection(I,_,_,_,X1,Y1,O,_), cell(X1,Y1,C,OC), link(C,O',O1'), O'=(O-OC)\4, O1=(O1'+OC)\4.
+1{chosen_connection(I,X1,Y1,O1,T,X2,Y2,O2,T+L)} :- 
+    chosen_connection(I,_,_,_,_,X1,Y1,OA,T), 
+    connection(X1,Y1,O1,X2,Y2,O2,L),
+    cell(X1,Y1,C,OC), 
+    link(C,(OA-OC+4)\4,(O1-OC+4)\4), 
+    step_limit(TL), T<TL.
 
+%:- chosen_connection(I,X1,Y1,O1,T1,X2,Y2,O2,T2), chosen_connection(I,X1,Y1,O1',T1,_,_,_,_), O1' != O1.
+
+% Define agent end state
+
+agent_done(I,T):-chosen_connection(I,X1,Y1,O1,X2,Y2,O2,T), agent_target(I,X2,Y2).
+:- not agent_done(I,_), agent(I,_).
 
 %#show junction/2.
 %#show path/7.
 %#show connection/7.
-#show chosen_connection/8.
+#show chosen_connection/9.
