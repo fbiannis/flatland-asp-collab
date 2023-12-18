@@ -27,7 +27,7 @@ cell(10,4,1,1).
 cell(11,4,1,1).
 cell(12,4,7,1).
 
-agent(0,12,4,1,0).
+agent(0,1,4,3,0).
 agent_target(0,12,4).
 
 % Define junction points:= Points at which lines end/
@@ -46,51 +46,52 @@ dir_diff(3, -1, 0).
 % C = Cell Type
 % OI = Incoming direction
 % OO = Outgoing direction
+% AA = Agent action 
 
 % Simple switch - standard
-link(2,0,0).
-link(2,2,2).
-link(2,0,3).
-link(2,1,2).
+link(2,0,0,2).
+link(2,2,2,2).
+link(2,0,3,1).
+link(2,1,2,2).
 
 % Simple switch - mirrored
-link(10,0,0).
-link(10,2,2).
-link(10,0,1).
-link(10,3,2).
+link(10,0,0,2).
+link(10,2,2,2).
+link(10,0,1,3).
+link(10,3,2,2).
 
 % Diamond crossing
-link(3,0,0).
-link(3,2,2).
-link(3,1,1).
-link(3,3,3).
+link(3,0,0,2).
+link(3,2,2,2).
+link(3,1,1,2).
+link(3,3,3,2).
 
 % Diamond crossing - Single slip
-link(4,0,0).
-link(4,2,2).
-link(4,1,1).
-link(4,3,3).
-link(4,0,3).
-link(4,1,2).
+link(4,0,0,2).
+link(4,2,2,2).
+link(4,1,1,2).
+link(4,3,3,2).
+link(4,0,3,1).
+link(4,1,2,3).
 
 % Diamond crossing - Double slip
-link(5,0,0).
-link(5,2,2).
-link(5,1,1).
-link(5,3,3).
-link(5,0,1).
-link(5,3,2).
-link(5,2,3).
-link(5,1,0).
+link(5,0,0,2).
+link(5,2,2,2).
+link(5,1,1,2).
+link(5,3,3,2).
+link(5,0,1,3).
+link(5,3,2,1).
+link(5,2,3,3).
+link(5,1,0,1).
 
 % Symmetrical
-link(6,0,1).
-link(6,0,3).
-link(6,1,2).
-link(6,3,2).
+link(6,0,1,3).
+link(6,0,3,1).
+link(6,1,2,2).
+link(6,3,2,2).
 
 % Dead end
-link(7,0,2).
+link(7,0,2,2).
 
 % Build paths between junctions. 
 % First start with straight lines and curves.
@@ -120,6 +121,7 @@ path(XO,YO,O',XO+XD,YO+YD,O',0) :- cell(XO,YO,6,OC), O'=(OC+3)\4, dir_diff(O',XD
 path(XO,YO,O',XO+XD,YO+YD,O',0) :- cell(XO,YO,7,OC), O'=(OC+2)\4, dir_diff(O',XD,YD).
 
 % Extend paths
+
 % Across straight tracks
 path(XO,YO,OO,X+XD,Y+YD,O,L+1) :- cell(X,Y,1,OC), dir_diff(O,XD,YD), path(XO,YO,OO,X,Y,O,L).
 % Across curved tracks
@@ -134,24 +136,33 @@ connection(X1,Y1,O1,X2,Y2,O2,L+1) :- path(X1,Y1,O1,X2,Y2,O2,L), junction(X2,Y2).
 chosen_connection(I,X,Y,O,0,X,Y,O,0) :- agent(I,X,Y,O,_).
 
 % Chooses 1 possible path from the current junction
-% O = Current orientation of the agent
-% O1 = Outgoing orientation of the agent
-% O2 = Final orientation of the agent after the path
-1{chosen_connection(I,X1,Y1,O1,T,X2,Y2,O2,T+L)} :- 
-    chosen_connection(I,_,_,_,_,X1,Y1,OA,T), 
+% I = ID of the agent
+% X1,Y1 = Starting coordinates of the connection the agent enters
+% O1 = First orientation of the agent on the outbound leg of the connection
+% X2,Y2 = Ending coordinates of the connection the agent enters
+% T = Time of entry into connection
+% O2 = Final orientation of the agent on the inbound leg of the connection
+% T+L = Time of exit from connection
+1{chosen_connection(I,X1,Y1,O1,T,X2,Y2,O2,T+L) : 
     connection(X1,Y1,O1,X2,Y2,O2,L),
     cell(X1,Y1,C,OC), 
-    link(C,(OA-OC+4)\4,(O1-OC+4)\4), 
+    link(C,(OA-OC+4)\4,(O1-OC+4)\4,_)}1 :- 
+    chosen_connection(I,_,_,_,_,X1,Y1,OA,T), 
+    not agent_done(I,T),
     step_limit(TL), T<TL.
 
-%:- chosen_connection(I,X1,Y1,O1,T1,X2,Y2,O2,T2), chosen_connection(I,X1,Y1,O1',T1,_,_,_,_), O1' != O1.
-
-% Define agent end state
-
-agent_done(I,T):-chosen_connection(I,X1,Y1,O1,X2,Y2,O2,T), agent_target(I,X2,Y2).
+% Define agent end state and constrain models to satisfied agents
+agent_done(I,T2):-chosen_connection(I,X1,Y1,O1,T1,X2,Y2,O2,T2), agent_target(I,X2,Y2).
 :- not agent_done(I,_), agent(I,_).
+
+% Generate agent actions from chosen connections
+agent_action(I, 2, T1+1) :-
+    chosen_connection(I,X1,Y1,O1,T1,X2,Y2,O2,T2),
+    T2 - T1 >= 1.
+
 
 %#show junction/2.
 %#show path/7.
 %#show connection/7.
 #show chosen_connection/9.
+#show agent_action/3.
