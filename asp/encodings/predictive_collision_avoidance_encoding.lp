@@ -28,13 +28,15 @@ cell(11,4,1,1).
 cell(12,4,7,1).
 
 agent(0,1,4,3,0).
-agent_target(0,12,4).
+agent_target(0,11,4).
 
-% Define junction points:= Points at which lines end/
-% All cell types, that are not empty straight or curved tracks.
+% Define junction points:= Points at which lines start & end + stations
+% All cell types, that are not empty straight or curved tracks or contain a station are junctions.
 
 junction(X,Y) :- cell(X,Y,2..7,_).
 junction(X,Y) :- cell(X,Y,10,_).
+junction(X,Y) :- agent(_,X,Y,_,_).
+junction(X,Y) :- agent_target(_,X,Y).
 
 % Helper
 dir_diff(0, 0, -1).
@@ -47,6 +49,16 @@ dir_diff(3, -1, 0).
 % OI = Incoming direction
 % OO = Outgoing direction
 % AA = Agent action 
+
+% Straight track
+link(1,0,0,2).
+link(1,2,2,2).
+
+% Curved tracks
+link(8,0,1,2).
+link(8,3,2,2).
+link(9,0,3,2).
+link(9,1,2,2).
 
 % Simple switch - standard
 link(2,0,0,2).
@@ -92,6 +104,7 @@ link(6,3,2,2).
 
 % Dead end
 link(7,0,2,2).
+link(7,2,2,2).
 
 % Build paths between junctions. 
 % First start with straight lines and curves.
@@ -132,7 +145,6 @@ path(XO,YO,OO,X+XD,Y+YD,O',L+1) :- cell(X,Y,9,OC), dir_diff(O',XD,YD), path(XO,Y
 connection(X1,Y1,O1,X2,Y2,O2,L+1) :- path(X1,Y1,O1,X2,Y2,O2,L), junction(X2,Y2).
 
 % Initialize agents on their junctions
-
 chosen_connection(I,X,Y,O,0,X,Y,O,0) :- agent(I,X,Y,O,_).
 
 % Chooses 1 possible path from the current junction
@@ -153,13 +165,20 @@ chosen_connection(I,X,Y,O,0,X,Y,O,0) :- agent(I,X,Y,O,_).
 
 % Define agent end state and constrain models to satisfied agents
 agent_done(I,T2):-chosen_connection(I,X1,Y1,O1,T1,X2,Y2,O2,T2), agent_target(I,X2,Y2).
-:- not agent_done(I,_), agent(I,_).
+:- not agent_done(I,_), agent(I,_,_,_,_).
 
 % Generate agent actions from chosen connections
-agent_action(I, 2, T1+1) :-
+% At junctions
+agent_action(I,A,T) :-
+    chosen_connection(I,_,_,_,_,X,Y,OA,T),
+    chosen_connection(I,X,Y,O,T,_,_,_,_),
+    cell(X,Y,C,OC),
+    link(C,(OA-OC+4)\4,(O-OC+4)\4,A).
+% Between junctions
+agent_action(I,2,T) :-
     chosen_connection(I,X1,Y1,O1,T1,X2,Y2,O2,T2),
-    T2 - T1 >= 1.
-
+    T2-T1 >= 1,
+    T=(T1+1)..(T2-1).
 
 %#show junction/2.
 %#show path/7.
