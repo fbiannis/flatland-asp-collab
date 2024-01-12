@@ -1,35 +1,3 @@
-%%%%%%%%%%%%%% TEMP %%%%%%%%%%%%%%%
-
-step_limit(20).
-
-cell(5,1,9,3).
-cell(6,1,1,1).
-cell(7,1,1,1).
-cell(8,1,9,0).
-cell(5,2,10,0).
-cell(6,2,1,1).
-cell(7,2,1,1).
-cell(8,2,2,0).
-cell(5,3,10,0).
-cell(6,3,1,1).
-cell(7,3,1,1).
-cell(8,3,2,0).
-cell(1,4,7,3).
-cell(2,4,1,1).
-cell(3,4,1,1).
-cell(4,4,1,1).
-cell(5,4,2,1).
-cell(6,4,1,1).
-cell(7,4,1,1).
-cell(8,4,10,3).
-cell(9,4,1,1).
-cell(10,4,1,1).
-cell(11,4,1,1).
-cell(12,4,7,1).
-
-agent(0,1,4,3,0).
-agent_target(0,11,4).
-
 % Define junction points := Points at which lines start & end + stations.
 % All cell types, that are not empty straight or curved tracks or contain a station are junctions.
 junction(X,Y) :- cell(X,Y,2..7,_).
@@ -163,13 +131,16 @@ chosen_connection(I,X,Y,O,0,X,Y,O,0) :- agent(I,X,Y,O,_).
 % X2,Y2 = Ending coordinates of the connection the agent has entered
 % O2    = Final orientation of the agent on arriving at the junction at X2,Y2
 % T2    = Time of arrival at the junction at X2,Y2
-1{chosen_connection(I,X1,Y1,O1,T,X2,Y2,O2,T+L) : 
+1{chosen_connection(I,X1,Y1,O1,T,X2,Y2,O2,T+L): 
     connection(X1,Y1,O1,X2,Y2,O2,L),
     cell(X1,Y1,C,OC), 
     link(C,(OA-OC+4)\4,(O1-OC+4)\4,_)}1 :- 
     chosen_connection(I,_,_,_,_,X1,Y1,OA,T), 
     not agent_done(I,T),
     step_limit(TL), T<TL.
+
+% Constrain models to disallow two agents from going down the same connection in opposing directions
+wait :- chosen_connection(_,X1,Y1,O1,T11,X2,Y2,O2,T12), chosen_connection(_,X2,Y2,(O2+2)\4,T21,X1,Y1,(O1+2)\4,T22), T11<=T21<=T12.
 
 % Define agent end state and constrain models to agents having all arrived
 agent_done(I,T2):-chosen_connection(I,X1,Y1,O1,T1,X2,Y2,O2,T2), agent_target(I,X2,Y2).
@@ -192,8 +163,8 @@ agent_action(I,2,T) :-
     T2-T1 >= 1,
     T=(T1+1)..(T2-1).
 
-%#show junction/2.
+#show junction/2.
 %#show path/7.
 %#show connection/7.
 #show chosen_connection/9.
-#show agent_action/3.
+#show agent_action/4.

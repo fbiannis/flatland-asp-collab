@@ -6,6 +6,8 @@ The cardinal directions are represented with:
 `2` - South  
 `3` - West  
 
+For this encoding to work the map needs to be '**complete**' - that is to say - cannot have any cell lead into an empty cell!
+
 # Agents
 
 **Agents** are represented with multiple terms:  
