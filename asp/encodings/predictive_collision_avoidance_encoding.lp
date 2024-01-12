@@ -140,7 +140,7 @@ chosen_connection(I,X,Y,O,0,X,Y,O,0) :- agent(I,X,Y,O,_).
     step_limit(TL), T<TL.
 
 % Constrain models to disallow two agents from going down the same connection in opposing directions
-wait :- chosen_connection(_,X1,Y1,O1,T11,X2,Y2,O2,T12), chosen_connection(_,X2,Y2,(O2+2)\4,T21,X1,Y1,(O1+2)\4,T22), T11<=T21<=T12.
+%wait :- chosen_connection(_,X1,Y1,O1,T11,X2,Y2,O2,T12), chosen_connection(_,X2,Y2,(O2+2)\4,T21,X1,Y1,(O1+2)\4,T22), T11<=T21<=T12.
 
 % Define agent end state and constrain models to agents having all arrived
 agent_done(I,T2):-chosen_connection(I,X1,Y1,O1,T1,X2,Y2,O2,T2), agent_target(I,X2,Y2).
@@ -167,4 +167,4 @@ agent_action(I,2,T) :-
 %#show path/7.
 %#show connection/7.
 #show chosen_connection/9.
-#show agent_action/4.
+#show agent_action/3.
