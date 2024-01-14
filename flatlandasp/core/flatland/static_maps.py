@@ -106,12 +106,15 @@ def passing_siding_map() -> Tuple[GridTransitionMap, dict[str, dict[str, Any]]]:
     en_simple_switch = transitions.rotate_transition(sw_simple_switch, 90)
     se_simple_switch = cell_types[CellType.SIMPLE_SWITCH_MIRRORED.value]
     wn_simple_switch = transitions.rotate_transition(se_simple_switch, 270)
+    s_dead_end = cell_types[CellType.DEAD_END.value]
+    w_dead_end = transitions.rotate_transition(s_dead_end, 90)
+    e_dead_end = transitions.rotate_transition(s_dead_end, 270)
 
     grid = np.array(
         [[empty] * (14)] +
         [[empty]*5 + [se_turn] + [we_straight]*2 + [ws_turn] + [empty]*5] +
-        [[empty] + [we_straight]*4+[en_simple_switch] +
-            [we_straight]*2+[wn_simple_switch] + [we_straight]*4 + [empty]] +
+        [[empty] + [e_dead_end] + [we_straight]*3 + [en_simple_switch] +
+            [we_straight]*2+[wn_simple_switch] + [we_straight]*3 + [w_dead_end]  + [empty]] +
         [[empty] * (14)], dtype=np.uint16
     )
     print(grid)
@@ -227,6 +230,7 @@ def simple_switch_map() -> Tuple[GridTransitionMap, dict[str, dict[str, Any]]]:
     optionals = {'agents_hints': agents_hints}
     return grid_transition_map, optionals
 
+
 def impossible_loop() -> Tuple[GridTransitionMap, dict[str, dict[str, Any]]]:
     transitions = RailEnvTransitions()
     cell_types = transitions.transition_list
@@ -269,6 +273,7 @@ def impossible_loop() -> Tuple[GridTransitionMap, dict[str, dict[str, Any]]]:
 
     optionals = {'agents_hints': agents_hints}
     return grid_transition_map, optionals
+
 
 def long_multiple_switch_map() -> Tuple[GridTransitionMap, dict[str, dict[str, Any]]]:
     transitions = RailEnvTransitions()
