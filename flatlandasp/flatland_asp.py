@@ -30,8 +30,6 @@ class FlatlandASP:
         self.clingo_control = clingo_control
         self.agent_actions = {}
         """ Actions each agent is supposed to make."""
-        self.agent_paths: dict[Any, list[Tuple[int, int]]] = {}
-        """ Path for each agent resulting from the given actions."""
 
     def _on_clingo_model(self, model: Model):
         """ Populate FlatlandASP with data based on model.
@@ -45,16 +43,9 @@ class FlatlandASP:
             if symbol.name == "agent_action":
                 id = symbol.arguments[0].number
                 action = symbol.arguments[1].number
+                time = symbol.arguments[2].number
 
-                self.agent_actions.setdefault(id, []).append(action)
-
-            if symbol.name == "agent_position":
-                id = symbol.arguments[0].number
-                x = symbol.arguments[1].number
-                y = symbol.arguments[2].number
-                handle = self.env.agents[id].handle
-
-                self.agent_paths.setdefault(handle, []).append((y, x))
+                self.agent_actions.setdefault(id, []).append((time,action))
 
     def simulate_environment(self, max_steps: int = 30,
                              step_delay: float = 0.5) -> None:
@@ -74,7 +65,10 @@ class FlatlandASP:
                                 agents_step[idx] += 1
                             else:
                                 agents_step[idx] = 0
-                            actionsdict[agent.handle] = self.agent_actions[idx][agents_step[idx]]
+                            for action in self.agent_actions[idx]:
+                                if action[0] == agents_step[idx]:
+                                    actionsdict[agent.handle] = action[1]
+                                    break
                     else:
                         actionsdict[agent.handle] = RailEnvActions.MOVE_FORWARD
 
@@ -118,7 +112,7 @@ class FlatlandASP:
         self.clingo_control.load("asp/instances/naive_test_instance.lp")
         # Load encoding from file
         self.clingo_control.load(
-            "asp/encodings/passing_siding_naive_encoding.lp")
+            "asp/encodings/predictive_collision_avoidance_encoding.lp")
         # Ground the program
         self.clingo_control.ground()
         # ctl.configuration.solve.models = 5
