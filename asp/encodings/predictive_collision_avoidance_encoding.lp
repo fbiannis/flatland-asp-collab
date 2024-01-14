@@ -161,7 +161,22 @@ agent_action(I,A,T) :-
 agent_action(I,2,T) :-
     chosen_connection(I,X1,Y1,O1,T1,X2,Y2,O2,T2),
     T2-T1 >= 1,
-    T=(T1+1)..(T2-1).
+    T=(T1+1)..(T2-2).
+
+%If a chosen connection is occupied by another agent in the opposing direction, delay the connection until it is free
+chosen_connection(I,X1,Y1,O1,T2+1,X2,Y2,O2,T2+1+T'-T) :- chosen_connection(I,X1,Y1,O1,T,X2,Y2,O2,T'), chosen_connection(_,X2,Y2,(O2+2)\4,T1,X1,Y1,(O1+2)\4,T2), T1 <= T <= T2.
+
+%showing the amount of agents (A) on a connection (X1,Y1,O1,X2,Y2,O2,L) at each timestep (T) (idea not working/needs improvement)
+%queue(A,X1,Y1,O1,X2,Y2,O2,L,T) :- 
+
+%wait on the last cell, if a connection got delayed and continue after waiting
+agent_action(I,4,T..T'), agent_action(I,2,T'+1) :-
+    chosen_connection(I,X1,Y1,O1,T1,X2,Y2,O2,T2),
+    chosen_connection(I,X3,Y3,O3,T3,X4,Y4,O4,_),
+    chosen_connection(I,X3,Y3,O3,T4,X4,Y4,O4,_),
+    T3<T4,
+    T' = T+T4-T3
+    T=T2-1.
 
 #show junction/2.
 %#show path/7.
