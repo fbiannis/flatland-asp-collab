@@ -174,8 +174,9 @@ agent_action(I,4,T..T'), agent_action(I,2,T'+1) :-
     chosen_connection(I,X1,Y1,O1,T1,X2,Y2,O2,T2),
     chosen_connection(I,X3,Y3,O3,T3,X4,Y4,O4,_),
     chosen_connection(I,X3,Y3,O3,T4,X4,Y4,O4,_),
+    T3=T2+1,
     T3<T4,
-    T' = T+T4-T3
+    T' = T+T4-T3,
     T=T2-1.
 
 #show junction/2.
