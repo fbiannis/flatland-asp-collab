@@ -138,7 +138,7 @@ A **path** is a pair of coordinates (`X1,Y1` and `X2,Y2`) connected by tracks.
 The orientations `O1` and `O2` are the orientations the agent would be going in when going out of `X1,Y1` or into `X2,Y2` respectively. They are included to make pathfinding easier and to distinguish between two different connections connecting the same junctions.  
 
 Every **path** originates from a *junction*.  
-They are iteratively constructed, going out from their originating junction until they reach another junction, at which point they become a *connection*.
+Going out from that junction, they are iteratively constructed until they reach another junction, at which point they become a *connection*.
 
 `L` gives the length of the **path**.
 
