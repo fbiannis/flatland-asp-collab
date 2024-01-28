@@ -113,7 +113,7 @@ class FlatlandASP:
         self.clingo_control.load("asp/instances/naive_test_instance.lp")
         # Load encoding from file
         self.clingo_control.load(
-            "asp/encodings/predictive_collision_avoidance_encoding.lp")
+            "share/encodings/predictive_collision_avoidance_encoding.lp")
         # Ground the program
         self.clingo_control.ground()
         # ctl.configuration.solve.models = 5
