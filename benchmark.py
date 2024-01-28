@@ -8,6 +8,8 @@ from flatland.envs.rail_generators import rail_from_grid_transition_map
 from flatland.utils.rendertools import AgentRenderVariant, RenderTool
 from flatland.envs.rail_env import RailEnv
 from flatland.envs.persistence import RailEnvPersister
+import pandas as pd
+import matplotlib as plt
 
 from flatlandasp.core.flatland.static_maps import (multi_passing_siding_map,
                                                    passing_siding_map,
@@ -17,6 +19,18 @@ from flatlandasp.core.flatland.static_maps import (multi_passing_siding_map,
 
 benchmarking = False
 
+def plot_benchmark():
+    data = pd.read_csv("bm_results.csv")
+    df = pd.DataFrame(data)
+    
+    X = list(df.iloc[:, 0]) 
+    Y = list(df.iloc[:, 1])
+
+    plt.bar(X, Y, color='g') 
+    plt.title("Predictive Collision Avoidance Encoding") 
+    plt.xlabel("Maps") 
+    plt.ylabel("Solving time") 
+    
 def create_environment(grid_transition_map, optionals) -> RailEnv:
     #grid_transition_map, optionals = straight_map(length=5, padding=3)
     env = RailEnv(width=grid_transition_map.grid.shape[1],
@@ -61,6 +75,8 @@ if __name__ == '__main__':
             f.write("{},".format(map[2]))
         f.close
         fa.solve()
+    
+    plot_benchmark()
 
 def benchmark_solve(flatlandASP):
     if benchmarking:
@@ -82,3 +98,4 @@ def benchmark_solve(flatlandASP):
     else:
         flatlandASP.clingo_control.solve(
             on_model=lambda x: flatlandASP._on_clingo_model(x))
+        
