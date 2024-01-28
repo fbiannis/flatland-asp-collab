@@ -29,7 +29,8 @@ def plot_benchmark():
     plt.bar(X, Y, color='g') 
     plt.title("Predictive Collision Avoidance Encoding") 
     plt.xlabel("Maps") 
-    plt.ylabel("Solving time") 
+    plt.ylabel("Solving time")
+    plt.show() 
     
 def create_environment(grid_transition_map, optionals) -> RailEnv:
     env = RailEnv(width=grid_transition_map.grid.shape[1],

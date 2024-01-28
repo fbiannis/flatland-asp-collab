@@ -50,8 +50,8 @@ cell(12,4,7,1).
 %   - I: Id of the agent
 %   - X: X coordinate of target position
 %   - Y: Y coordinate of target position
-agent(0,12,4,1,0).
-agent_target(0,1,4).
+agent(0,1,4,3,0).
+agent_target(0,12,4).
 
 % Possible actions an agent can take in each cell are defined as
 %   possible_action(C,O,A,OC).
@@ -60,20 +60,6 @@ agent_target(0,1,4).
 %   - O: Orientation of the agent entering the cell
 %   - A: One of the actions the agent can choose
 %   - OC: Change in orientation of the agent after taking action A
-possible_action(10,0,2,0).
-possible_action(10,0,3,1).
-possible_action(10,0,4,0).
-possible_action(10,1,4,0).
-possible_action(10,2,2,0).
-possible_action(10,2,4,0).
-possible_action(10,3,2,3).
-possible_action(10,3,4,0).
-possible_action(1,0,2,0).
-possible_action(1,0,4,0).
-possible_action(1,1,4,0).
-possible_action(1,2,2,0).
-possible_action(1,2,4,0).
-possible_action(1,3,4,0).
 possible_action(9,0,2,3).
 possible_action(9,0,4,0).
 possible_action(9,1,2,1).
@@ -88,8 +74,22 @@ possible_action(2,1,4,0).
 possible_action(2,2,2,0).
 possible_action(2,2,4,0).
 possible_action(2,3,4,0).
+possible_action(1,0,2,0).
+possible_action(1,0,4,0).
+possible_action(1,1,4,0).
+possible_action(1,2,2,0).
+possible_action(1,2,4,0).
+possible_action(1,3,4,0).
 possible_action(7,0,2,2).
 possible_action(7,0,4,0).
 possible_action(7,1,4,0).
 possible_action(7,2,4,0).
 possible_action(7,3,4,0).
+possible_action(10,0,2,0).
+possible_action(10,0,3,1).
+possible_action(10,0,4,0).
+possible_action(10,1,4,0).
+possible_action(10,2,2,0).
+possible_action(10,2,4,0).
+possible_action(10,3,2,3).
+possible_action(10,3,4,0).
