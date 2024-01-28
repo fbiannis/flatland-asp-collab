@@ -5,7 +5,7 @@ from clingo import Model
 from clingo.control import Control
 from flatland.envs.rail_env import RailEnv, RailEnvActions
 from flatland.utils.rendertools import RenderTool
-import benchmark as bm
+from benchmark import benchmark_solve
 
 from flatlandasp.core.asp.instance_descriptions.base_instance import \
     BaseInstance
@@ -117,8 +117,4 @@ class FlatlandASP:
         # Ground the program
         self.clingo_control.ground()
         # ctl.configuration.solve.models = 5
-        if bm.benchmarking:
-            self = bm.benchmark(self)
-        else:
-            self.clingo_control.solve(
-                on_model=lambda x: self._on_clingo_model(x))
+        benchmark_solve(self)

@@ -7,7 +7,6 @@ from flatland.envs.rail_generators import rail_from_grid_transition_map
 from flatland.utils.rendertools import AgentRenderVariant, RenderTool
 from flatland.envs.rail_env import RailEnv
 from flatland.envs.persistence import RailEnvPersister
-from benchmark import benchmark
 
 from flatlandasp.core.flatland.static_maps import (multi_passing_siding_map,
                                                    passing_siding_map,
@@ -19,7 +18,7 @@ from flatlandasp.flatland_asp import FlatlandASP
 
 def create_environment() -> RailEnv:
     #grid_transition_map, optionals = straight_map(length=5, padding=3)
-    grid_transition_map, optionals = straight_map()
+    grid_transition_map, optionals = passing_siding_map()
     env = RailEnv(width=grid_transition_map.grid.shape[1],
                   height=grid_transition_map.grid.shape[0],
                   rail_generator=rail_from_grid_transition_map(
@@ -45,9 +44,6 @@ if __name__ == '__main__':
     ctl = Control()
     env.reset()
     fa = FlatlandASP(env=env, env_renderer=env_renderer, clingo_control=ctl)
-    
-    
     fa.solve()
-        
     fa.simulate_environment()
     hold_window_for_input(env_renderer)
