@@ -1,17 +1,3 @@
-
-%cell(1,0,9,3).
-%cell(2,0,7,1).
-%cell(0,1,7,3).
-%cell(1,1,2,1).
-%cell(2,1,7,1).
-%
-%
-%agent(0,0,1,3,0).
-%agent(1,2,1,1,0).
-%agent_target(0,2,1).
-%agent_target(1,0,1).
-%step_limit(20).
-
 % Define junction points := Points at which lines start & end + stations.
 % All cell types, that are not empty straight or curved tracks or contain a station are junctions.
 junction(X,Y) :- cell(X,Y,2..7,_).
@@ -133,8 +119,9 @@ path(XO,YO,OO,X+XD,Y+YD,O',L+1) :- cell(X,Y,9,OC), dir_diff(O',XD,YD), path(XO,Y
 % Finish connections - paths that start and end in junctions!
 connection(X1,Y1,O1,X2,Y2,O2,L+1) :- path(X1,Y1,O1,X2,Y2,O2,L), junction(X2,Y2).
 
-% Initialize agents on their junctions
+% Initialize agents on their junctions and positions
 chosen_connection(I,-1,-1,O,0,X,Y,O,0) :- agent(I,X,Y,O,_).
+agent_position(I,0,X,Y,O) :- agent(I,X,Y,O,_).
 
 % Choose 1 possible path from every agent's current junction
 % chosen_connection(I,X1,Y1,O1,T1,X2,Y2,O2,T2)
@@ -148,14 +135,10 @@ chosen_connection(I,-1,-1,O,0,X,Y,O,0) :- agent(I,X,Y,O,_).
 1{chosen_connection(I,X1,Y1,O1,T,X2,Y2,O2,T+L): 
     connection(X1,Y1,O1,X2,Y2,O2,L),
     cell(X1,Y1,C,OC), 
-    link(C,(OA-OC+4)\4,(O1-OC+4)\4,_)}1 :-
-    wait(I,T',T),
-    chosen_connection(I,_,_,_,_,X1,Y1,OA,T'), 
+    link(C,(OA-OC+4)\4,(O1-OC+4)\4,_)}1 :- 
+    chosen_connection(I,_,_,_,_,X1,Y1,OA,T), 
     not agent_done(I,T),
     step_limit(TL), T<TL.
-
-% Create waiting connections up until the time horizon
-1{wait(I,T1,T2):T2=T1..S}1 :- chosen_connection(I,_,_,_,_,X,Y,_,T1), step_limit(S).
 
 % Define agent end state and constrain models to agents having all arrived
 agent_done(I,T2):-chosen_connection(I,X1,Y1,O1,T1,X2,Y2,O2,T2), agent_target(I,X2,Y2).
@@ -168,50 +151,52 @@ agent_done(I,T2):-chosen_connection(I,X1,Y1,O1,T1,X2,Y2,O2,T2), agent_target(I,X
 % T = Time step of the action
 % At junctions:
 agent_action(I,A,T):-
-    chosen_connection(I,_,_,_,_,X,Y,OA,T),
-    chosen_connection(I,X,Y,O,T,_,_,_,_),
+    chosen_connection(I,X,Y,OO,T,_,_,_,_),
+    chosen_connection(I,_,_,_,_,X,Y,OI,_),
+    agent_position(I,T,X,Y,_),
     cell(X,Y,C,OC),
-    link(C,(OA-OC+4)\4,(O-OC+4)\4,A).
-% Between junctions:
-agent_action(I,2,T) :-
-    chosen_connection(I,X1,Y1,O1,T1,X2,Y2,O2,T2),
-    T2-T1 >= 1,
-    T=(T1+1)..(T2-2).
-% For waiting:
-agent_action(I,4,T) :-
-    wait(I,T1,T2),
-    T2-T1 >= 1,
-    T=(T1-1)..(T2-1),
-    T>=0.
-agent_action(I,2,T-1) :-
-    wait(I,_,T),
-    T>=0.
+    link(C,(OI-OC+4)\4,(OO-OC+4)\4,A).
+
+% Between junctions
+agent_action(I,2,T):-
+    agent_position(I,T,X,Y,_),
+    not junction(X,Y),
+    not agent_action(I,4,T).
+
+% For waiting by choice
+{agent_action(I,4,T)} :- 
+    agent_position(I,T,X,Y,_),
+    cell(X,Y,C,OC),
+    link(C,_,OO,A),
+    dir_diff((OO+OC)\4,X',Y'),
+    junction(X',Y').
+% For waiting on standing train ahead
+agent_action(I,4,T):-
+    agent_position(I,T+1,X,Y,_),
+    agent_position(I',T,X,Y,_),
+    I != I',
+    agent_action(I',4,T).
+
+% Update agent positions based on generated actions
+agent_position(I,T+1,X2,Y2,O2) :- 
+    agent_action(I,A,T),
+    agent_position(I,T,X1,Y1,O1),
+    cell(X1,Y1,C,OC),
+    link(C,(O1-OC+4)\4,(O2-OC+4)\4,A),
+    dir_diff(O2,XD,YD),
+    X2 = X1+XD, Y2 = Y1+YD.
+
+%:- agent_action(_,_,T), step_limit(TL), T>TL.
 
 % Two agents cannot go onto the same connection heading in opposing directions at the same time
-:- chosen_connection(I,X1,Y1,O1,T,X2,Y2,O2,_), chosen_connection(_,X2,Y2,(O2+2)\4,T1,X1,Y1,(O1+2)\4,T2), T1 <= T <= T2.
+%:- chosen_connection(_,X1,Y1,O1,T,X2,Y2,O2,_), chosen_connection(_,X2,Y2,(O2+2)\4,T1,X1,Y1,(O1+2)\4,T2), T1 <= T <= T2.
 
-% Two agents cannot exit their connections onto the junction at the same time
-:- chosen_connection(I1,_,_,_,_,X,Y,_,T1..T2), chosen_connection(I2,_,_,_,_,X,Y,_,T1..T2), I1 != I2, wait(I1,T1,T2).
-
-%showing the amount of agents (A) on a connection (X1,Y1,O1,X2,Y2,O2,L) at each timestep (T) (idea not working/needs improvement)
-%queue(A,X1,Y1,O1,X2,Y2,O2,L,T) :- 
-
-%wait on the last cell, if a connection got delayed and continue after waiting
-%agent_action(I,4,T..T'), agent_action(I,2,T'+1) :-
-%    chosen_connection(I,X1,Y1,O1,T1,X2,Y2,O2,T2),
-%    chosen_connection(I,X3,Y3,O3,T3,X4,Y4,O4,_),
-%    chosen_connection(I,X3,Y3,O3,T4,X4,Y4,O4,_),
-%    T3=T2+1,
-%    T3<T4,
-%    T' = T+T4-T3,
-%    T=T2-1.
-
-%#minimize { 1, I, A, T : agent_action(I, A, T) }.
-%#minimize { T2 - T1, I, T1, T2 : wait(I, T1, T2) }.
+% Two agents cannot occupy the same cell simultaneously
+:- agent_position(I,T,X,Y,_), agent_position(I',T,X,Y,_), I != I'.
 
 %#show junction/2.
 %#show path/7.
 %#show connection/7.
-#show wait/3. 
-#show chosen_connection/9.
+%#show agent_position/5.
+%#show chosen_connection/9.
 #show agent_action/3.
