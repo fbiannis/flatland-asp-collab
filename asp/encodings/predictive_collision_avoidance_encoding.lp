@@ -1,17 +1,3 @@
-
-cell(1,0,9,3).
-cell(2,0,7,1).
-cell(0,1,7,3).
-cell(1,1,2,1).
-cell(2,1,7,1).
-
-agent(0,2,0,3,0).
-agent_target(0,0,1).
-%agent(1,0,1,1,0).
-%agent_target(1,2,0).
-step_limit(20).
-:- agent_done(_,T), T<15.
-
 % Define junction points := Points at which lines start & end + stations.
 % All cell types, that are not empty straight or curved tracks or contain a station are junctions.
 junction(X,Y) :- cell(X,Y,2..7,_).
