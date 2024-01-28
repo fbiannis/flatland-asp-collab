@@ -10,6 +10,7 @@ from flatland.envs.rail_env import RailEnv
 from flatland.envs.persistence import RailEnvPersister
 import pandas as pd
 import matplotlib.pyplot as plt
+import os
 
 from flatlandasp.core.flatland.static_maps import (multi_passing_siding_map,
                                                    passing_siding_map,
@@ -17,7 +18,6 @@ from flatlandasp.core.flatland.static_maps import (multi_passing_siding_map,
                                                    impossible_loop,
                                                    long_multiple_switch_map)
 
-benchmarking = True
 
 def plot_benchmark():
     data = pd.read_csv("bm_results.csv")
@@ -31,26 +31,27 @@ def plot_benchmark():
     plt.xlabel("Maps") 
     plt.ylabel("Solving time")
     plt.show() 
-    
+
 def create_environment(grid_transition_map, optionals) -> RailEnv:
     env = RailEnv(width=grid_transition_map.grid.shape[1],
-                  height=grid_transition_map.grid.shape[0],
-                  rail_generator=rail_from_grid_transition_map(
-                      grid_transition_map, optionals),
-                  line_generator=sparse_line_generator(),
-                  number_of_agents=1,
-                  obs_builder_object=GlobalObsForRailEnv()
-                  )
+                height=grid_transition_map.grid.shape[0],
+                rail_generator=rail_from_grid_transition_map(
+                    grid_transition_map, optionals),
+                line_generator=sparse_line_generator(),
+                number_of_agents=1,
+                obs_builder_object=GlobalObsForRailEnv()
+                )
 
     return env
 
 
+            
 if __name__ == '__main__':
+    os.environ['BENCHMARK_MODE'] = 'True'
     from flatlandasp.flatland_asp import FlatlandASP
     with open("bm_results.csv", 'w') as f:
         f.write("map_name,solving_time\n")
     f.close
-    benchmarking = True
     maps = []
     
     grid_transition_map, optionals = multi_passing_siding_map()
@@ -77,8 +78,9 @@ if __name__ == '__main__':
         fa.solve()
     
     plot_benchmark()
-
+    
 def benchmark_solve(flatlandASP):
+    benchmarking = os.getenv('BENCHMARK_MODE') == 'True'
     if benchmarking:
         #solve 100 times and take the average time
         solvetimes = []
@@ -98,4 +100,3 @@ def benchmark_solve(flatlandASP):
     else:
         flatlandASP.clingo_control.solve(
             on_model=lambda x: flatlandASP._on_clingo_model(x))
-        
