@@ -11,30 +11,40 @@ step_limit(20).
 %   - Y: Y coordinate of position
 %   - C: Type of the cell
 %   - O: Orientation
-cell(5,1,9,3).
-cell(6,1,1,1).
-cell(7,1,1,1).
-cell(8,1,9,0).
-cell(5,2,10,0).
-cell(6,2,1,1).
-cell(7,2,1,1).
-cell(8,2,2,0).
-cell(5,3,10,0).
-cell(6,3,1,1).
-cell(7,3,1,1).
-cell(8,3,2,0).
-cell(1,4,7,3).
-cell(2,4,1,1).
-cell(3,4,1,1).
-cell(4,4,1,1).
-cell(5,4,2,1).
-cell(6,4,1,1).
-cell(7,4,1,1).
-cell(8,4,10,3).
-cell(9,4,1,1).
-cell(10,4,1,1).
-cell(11,4,1,1).
-cell(12,4,7,1).
+cell(0,0,7,3).
+cell(1,0,2,3).
+cell(2,0,10,1).
+cell(3,0,2,3).
+cell(4,0,10,1).
+cell(5,0,2,3).
+cell(6,0,10,1).
+cell(7,0,2,3).
+cell(8,0,10,1).
+cell(9,0,2,3).
+cell(10,0,10,1).
+cell(11,0,7,1).
+cell(1,1,1,0).
+cell(2,1,1,0).
+cell(3,1,1,0).
+cell(4,1,1,0).
+cell(5,1,1,0).
+cell(6,1,1,0).
+cell(7,1,1,0).
+cell(8,1,1,0).
+cell(9,1,1,0).
+cell(10,1,1,0).
+cell(0,2,7,3).
+cell(1,2,10,3).
+cell(2,2,2,1).
+cell(3,2,10,3).
+cell(4,2,2,1).
+cell(5,2,10,3).
+cell(6,2,2,1).
+cell(7,2,10,3).
+cell(8,2,2,1).
+cell(9,2,10,3).
+cell(10,2,2,1).
+cell(11,2,7,1).
 
 % Agent's initial values are defined in three literals
 %   agent(I,X,Y,O,D).
@@ -50,8 +60,8 @@ cell(12,4,7,1).
 %   - I: Id of the agent
 %   - X: X coordinate of target position
 %   - Y: Y coordinate of target position
-agent(0,1,4,3,0).
-agent_target(0,12,4).
+agent(0,0,2,3,0).
+agent_target(0,11,2).
 
 % Possible actions an agent can take in each cell are defined as
 %   possible_action(C,O,A,OC).
@@ -60,12 +70,12 @@ agent_target(0,12,4).
 %   - O: Orientation of the agent entering the cell
 %   - A: One of the actions the agent can choose
 %   - OC: Change in orientation of the agent after taking action A
-possible_action(9,0,2,3).
-possible_action(9,0,4,0).
-possible_action(9,1,2,1).
-possible_action(9,1,4,0).
-possible_action(9,2,4,0).
-possible_action(9,3,4,0).
+possible_action(1,0,2,0).
+possible_action(1,0,4,0).
+possible_action(1,1,4,0).
+possible_action(1,2,2,0).
+possible_action(1,2,4,0).
+possible_action(1,3,4,0).
 possible_action(2,0,2,0).
 possible_action(2,0,1,3).
 possible_action(2,0,4,0).
@@ -74,17 +84,6 @@ possible_action(2,1,4,0).
 possible_action(2,2,2,0).
 possible_action(2,2,4,0).
 possible_action(2,3,4,0).
-possible_action(1,0,2,0).
-possible_action(1,0,4,0).
-possible_action(1,1,4,0).
-possible_action(1,2,2,0).
-possible_action(1,2,4,0).
-possible_action(1,3,4,0).
-possible_action(7,0,2,2).
-possible_action(7,0,4,0).
-possible_action(7,1,4,0).
-possible_action(7,2,4,0).
-possible_action(7,3,4,0).
 possible_action(10,0,2,0).
 possible_action(10,0,3,1).
 possible_action(10,0,4,0).
@@ -93,3 +92,8 @@ possible_action(10,2,2,0).
 possible_action(10,2,4,0).
 possible_action(10,3,2,3).
 possible_action(10,3,4,0).
+possible_action(7,0,2,2).
+possible_action(7,0,4,0).
+possible_action(7,1,4,0).
+possible_action(7,2,4,0).
+possible_action(7,3,4,0).
