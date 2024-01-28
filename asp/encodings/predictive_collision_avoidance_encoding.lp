@@ -1,16 +1,9 @@
-% Define junction points := Points at which lines start & end + stations.
-% All cell types, that are not empty straight or curved tracks or contain a station are junctions.
-junction(X,Y) :- cell(X,Y,2..7,_).
-junction(X,Y) :- cell(X,Y,10,_).
-% Stations = Junctions
-junction(X,Y) :- agent(_,X,Y,_,_).
-junction(X,Y) :- agent_target(_,X,Y).
-
-% Helper
+%%%%%%%%% HELPER %%%%%%%%%
 dir_diff(0, 0, -1).
 dir_diff(1, 1, 0). 
 dir_diff(2, 0, 1). 
 dir_diff(3, -1, 0).
+
 
 % Define how junctions link between orientations using 'link(C,OI,OO,A)'
 % C  = Cell Type
@@ -74,6 +67,27 @@ link(6,3,2,2).
 link(7,0,2,2).
 link(7,2,2,2).
 
+% A predicate that gives the next cell of an agent upon an action
+% X1,Y1,O1 = Current agent position and orientation
+% A        = Action taken by agent
+% X2,Y2,O2 = Resulting position and orientation
+next_cell(X1,Y1,O1,A,X2,Y2,O2) :-
+    O1 = 0..3,
+    cell(X1,Y1,C,OC),
+    link(C,(O1-OC+4)\4,(O2-OC+4)\4,A),
+    dir_diff(O2,XD,YD),
+    X2 = X1+XD, Y2 = Y1+YD.
+
+%%%%% END OF HELPER %%%%%%
+
+% Define junction points := Points at which lines start & end + stations.
+% All cell types, that are not empty straight or curved tracks or contain a station are junctions.
+junction(X,Y) :- cell(X,Y,2..7,_).
+junction(X,Y) :- cell(X,Y,10,_).
+% Stations = Junctions
+junction(X,Y) :- agent(_,X,Y,_,_).
+junction(X,Y) :- agent_target(_,X,Y).
+
 % Build connections between junctions by using paths. 
 % path(XO,YO,OO,X,Y,O,L)
 % XO,YO = Origin of the path (starting junction)
@@ -136,12 +150,13 @@ agent_position(I,0,X,Y,O) :- agent(I,X,Y,O,_).
     connection(X1,Y1,O1,X2,Y2,O2,L),
     cell(X1,Y1,C,OC), 
     link(C,(OA-OC+4)\4,(O1-OC+4)\4,_)}1 :- 
-    chosen_connection(I,_,_,_,_,X1,Y1,OA,T), 
+    chosen_connection(I,_,_,_,_,X1,Y1,OA,_),
+    agent_position(I,T,X1,Y1,OA), 
     not agent_done(I,T),
     step_limit(TL), T<TL.
 
 % Define agent end state and constrain models to agents having all arrived
-agent_done(I,T2):-chosen_connection(I,X1,Y1,O1,T1,X2,Y2,O2,T2), agent_target(I,X2,Y2).
+agent_done(I,T):-agent_position(I,T,X,Y,_), agent_target(I,X,Y).
 :- not agent_done(I,_), agent(I,_,_,_,_).
 
 % Generate agent actions from chosen connections
@@ -165,15 +180,16 @@ agent_action(I,2,T):-
 
 % For waiting by choice
 {agent_action(I,4,T)} :- 
-    agent_position(I,T,X,Y,_),
-    cell(X,Y,C,OC),
-    link(C,_,OO,A),
-    dir_diff((OO+OC)\4,X',Y'),
+    agent_position(I,T,X,Y,O),
+    next_cell(X,Y,O,2,X',Y',_),
+    not junction(X,Y),
     junction(X',Y').
-% For waiting on standing train ahead
+
+% For waiting on a standing train ahead
 agent_action(I,4,T):-
-    agent_position(I,T+1,X,Y,_),
-    agent_position(I',T,X,Y,_),
+    agent_position(I,T,X,Y,O),
+    agent_position(I',T,X',Y',_),
+    next_cell(X,Y,O,2,X',Y',_),
     I != I',
     agent_action(I',4,T).
 
@@ -181,15 +197,15 @@ agent_action(I,4,T):-
 agent_position(I,T+1,X2,Y2,O2) :- 
     agent_action(I,A,T),
     agent_position(I,T,X1,Y1,O1),
-    cell(X1,Y1,C,OC),
-    link(C,(O1-OC+4)\4,(O2-OC+4)\4,A),
-    dir_diff(O2,XD,YD),
-    X2 = X1+XD, Y2 = Y1+YD.
-
-%:- agent_action(_,_,T), step_limit(TL), T>TL.
+    next_cell(X1,Y1,O1,A,X2,Y2,O2),
+    step_limit(TL), T<TL.
+agent_position(I,T+1,X1,Y1,O1) :- 
+    agent_action(I,4,T),
+    agent_position(I,T,X1,Y1,O1),
+    step_limit(TL), T<TL.
 
 % Two agents cannot go onto the same connection heading in opposing directions at the same time
-%:- chosen_connection(_,X1,Y1,O1,T,X2,Y2,O2,_), chosen_connection(_,X2,Y2,(O2+2)\4,T1,X1,Y1,(O1+2)\4,T2), T1 <= T <= T2.
+:- chosen_connection(I,X1,Y1,O1,T,X2,Y2,O2,_), chosen_connection(I',X2,Y2,(O2+2)\4,T1,X1,Y1,(O1+2)\4,T2), T1 <= T <= T2, I != I'.
 
 % Two agents cannot occupy the same cell simultaneously
 :- agent_position(I,T,X,Y,_), agent_position(I',T,X,Y,_), I != I'.
@@ -197,6 +213,7 @@ agent_position(I,T+1,X2,Y2,O2) :-
 %#show junction/2.
 %#show path/7.
 %#show connection/7.
+%#show agent_done/2.
 %#show agent_position/5.
 %#show chosen_connection/9.
 #show agent_action/3.
