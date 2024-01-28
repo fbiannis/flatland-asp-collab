@@ -89,6 +89,15 @@ path(XO,YO,O',XO+XD,YO+YD,O',0) :- cell(XO,YO,6,OC), O'=(OC+2)\4, dir_diff(O',XD
 path(XO,YO,O',XO+XD,YO+YD,O',0) :- cell(XO,YO,6,OC), O'=(OC+3)\4, dir_diff(O',XD,YD).
 % Dead end
 path(XO,YO,O',XO+XD,YO+YD,O',0) :- cell(XO,YO,7,OC), O'=(OC+2)\4, dir_diff(O',XD,YD).
+% Straigt
+path(XO,YO,O',XO+XD,YO+YD,O',0) :- cell(XO,YO,1,OC), O'=(OC+0)\4, dir_diff(O',XD,YD).
+path(XO,YO,O',XO+XD,YO+YD,O',0) :- cell(XO,YO,1,OC), O'=(OC+2)\4, dir_diff(O',XD,YD).
+% Curve - Going east
+path(XO,YO,O',XO+XD,YO+YD,O',0) :- cell(XO,YO,8,OC), O'=(OC+1)\4, dir_diff(O',XD,YD).
+path(XO,YO,O',XO+XD,YO+YD,O',0) :- cell(XO,YO,8,OC), O'=(OC+2)\4, dir_diff(O',XD,YD).
+% Curve - Going west
+path(XO,YO,O',XO+XD,YO+YD,O',0) :- cell(XO,YO,9,OC), O'=(OC+2)\4, dir_diff(O',XD,YD).
+path(XO,YO,O',XO+XD,YO+YD,O',0) :- cell(XO,YO,9,OC), O'=(OC+3)\4, dir_diff(O',XD,YD).
 % Then: Extend paths recursively
 % Across straight tracks
 path(XO,YO,OO,X+XD,Y+YD,O,L+1) :- cell(X,Y,1,OC), dir_diff(O,XD,YD), path(XO,YO,OO,X,Y,O,L).
