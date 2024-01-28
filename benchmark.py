@@ -9,7 +9,7 @@ from flatland.utils.rendertools import AgentRenderVariant, RenderTool
 from flatland.envs.rail_env import RailEnv
 from flatland.envs.persistence import RailEnvPersister
 import pandas as pd
-import matplotlib as plt
+import matplotlib.pyplot as plt
 
 from flatlandasp.core.flatland.static_maps import (multi_passing_siding_map,
                                                    passing_siding_map,
@@ -17,7 +17,7 @@ from flatlandasp.core.flatland.static_maps import (multi_passing_siding_map,
                                                    impossible_loop,
                                                    long_multiple_switch_map)
 
-benchmarking = False
+benchmarking = True
 
 def plot_benchmark():
     data = pd.read_csv("bm_results.csv")
@@ -47,7 +47,7 @@ def create_environment(grid_transition_map, optionals) -> RailEnv:
 
 if __name__ == '__main__':
     from flatlandasp.flatland_asp import FlatlandASP
-    with open("bm_results.csv", 'a') as f:
+    with open("bm_results.csv", 'w') as f:
         f.write("map_name,solving_time\n")
     f.close
     benchmarking = True

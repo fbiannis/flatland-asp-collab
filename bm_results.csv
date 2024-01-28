@@ -1,3 +1,6 @@
 map_name,solving_time
-multi_passing_siding_map,map_name,solving_time
-multi_passing_siding_map,
+multi_passing_siding_map,0.0007787418365478516
+passing_siding_map,0.0006803750991821289
+straight_map,9.970664978027344e-06
+impossible_loop,1.0001659393310548e-05
+long_multiple_switch_map,0.0013300204277038575
