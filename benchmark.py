@@ -32,7 +32,6 @@ def plot_benchmark():
     plt.ylabel("Solving time") 
     
 def create_environment(grid_transition_map, optionals) -> RailEnv:
-    #grid_transition_map, optionals = straight_map(length=5, padding=3)
     env = RailEnv(width=grid_transition_map.grid.shape[1],
                   height=grid_transition_map.grid.shape[0],
                   rail_generator=rail_from_grid_transition_map(
@@ -57,7 +56,7 @@ if __name__ == '__main__':
     maps.append([grid_transition_map, optionals, "multi_passing_siding_map"])
     grid_transition_map, optionals = passing_siding_map()
     maps.append([grid_transition_map, optionals, "passing_siding_map"])
-    grid_transition_map, optionals = straight_map(length=5, padding=3)
+    grid_transition_map, optionals = straight_map(length=25, padding=3)
     maps.append([grid_transition_map, optionals, "straight_map"])
     grid_transition_map, optionals = impossible_loop()
     maps.append([grid_transition_map, optionals, "impossible_loop"])
