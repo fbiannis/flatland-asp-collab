@@ -13,11 +13,16 @@ def straight_map(*, length: int, padding: int) -> Tuple[GridTransitionMap, dict[
     empty = cell_types[0]
     sn_straight = cell_types[1]
     we_straight = transitions.rotate_transition(sn_straight, 90)
+    s_dead_end = cell_types[CellType.DEAD_END.value]
+    w_dead_end = transitions.rotate_transition(s_dead_end, 90)
+    e_dead_end = transitions.rotate_transition(s_dead_end, 270)
+    length = max(length, 2)
+    length -= 2
 
     grid = np.array(
-        [[empty] * (length+2*padding)]*padding +
-        [[empty]*padding + [we_straight] * length + [empty]*padding] +
-        [[empty] * (length+2*padding)]*padding
+        [[empty] * (2+length+2*padding)]*padding +
+        [[empty]*padding + [e_dead_end] + [we_straight] * length + [w_dead_end] + [empty]*padding] +
+        [[empty] * (2+length+2*padding)]*padding
     )
 
     print(grid)
@@ -32,7 +37,7 @@ def straight_map(*, length: int, padding: int) -> Tuple[GridTransitionMap, dict[
     city_orientations = [1, 3]
 
     train_stations = [[((padding, padding), 0)],
-                      [((padding, padding+length-1), 0)]]
+                      [((padding, padding+length+1), 0)]]
 
     agents_hints = {'city_positions': city_positions,
                     'train_stations': train_stations,

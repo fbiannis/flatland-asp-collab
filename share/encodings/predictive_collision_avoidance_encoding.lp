@@ -121,6 +121,20 @@ path(XO,YO,O',XO+XD,YO+YD,O',0) :- cell(XO,YO,6,OC), O'=(OC+3)\4, dir_diff(O',XD
 % Dead end
 path(XO,YO,O',XO+XD,YO+YD,O',0) :- cell(XO,YO,7,OC), O'=(OC+2)\4, dir_diff(O',XD,YD).
 
+% Straigt
+
+path(XO,YO,O',XO+XD,YO+YD,O',0) :- cell(XO,YO,1,OC), O'=(OC+0)\4, dir_diff(O',XD,YD).
+path(XO,YO,O',XO+XD,YO+YD,O',0) :- cell(XO,YO,1,OC), O'=(OC+2)\4, dir_diff(O',XD,YD).
+
+% Curve - Going east
+
+path(XO,YO,O',XO+XD,YO+YD,O',0) :- cell(XO,YO,8,OC), O'=(OC+1)\4, dir_diff(O',XD,YD).
+path(XO,YO,O',XO+XD,YO+YD,O',0) :- cell(XO,YO,8,OC), O'=(OC+2)\4, dir_diff(O',XD,YD).
+
+% Curve - Going west
+
+path(XO,YO,O',XO+XD,YO+YD,O',0) :- cell(XO,YO,9,OC), O'=(OC+2)\4, dir_diff(O',XD,YD).
+path(XO,YO,O',XO+XD,YO+YD,O',0) :- cell(XO,YO,9,OC), O'=(OC+3)\4, dir_diff(O',XD,YD).
 
 % Then: Extend paths recursively
 
@@ -157,7 +171,7 @@ agent_position(I,0,X,Y,O) :- agent(I,X,Y,O,_).
 
 % Define agent end state and constrain models to agents having all arrived
 agent_done(I,T):-agent_position(I,T,X,Y,_), agent_target(I,X,Y).
-:- not agent_done(I,_), agent(I,_,_,_,_).
+%:- not agent_done(I,_), agent(I,_,_,_,_).
 
 % Generate agent actions from chosen connections
 % agent_action(I,A,T)
@@ -205,15 +219,15 @@ agent_position(I,T+1,X1,Y1,O1) :-
     step_limit(TL), T<TL.
 
 % Two agents cannot go onto the same connection heading in opposing directions at the same time
-:- chosen_connection(I,X1,Y1,O1,T,X2,Y2,O2,_), chosen_connection(I',X2,Y2,(O2+2)\4,T1,X1,Y1,(O1+2)\4,T2), T1 <= T <= T2, I != I'.
+%:- chosen_connection(I,X1,Y1,O1,T,X2,Y2,O2,_), chosen_connection(I',X2,Y2,(O2+2)\4,T1,X1,Y1,(O1+2)\4,T2), T1 <= T <= T2, I != I'.
 
 % Two agents cannot occupy the same cell simultaneously
-:- agent_position(I,T,X,Y,_), agent_position(I',T,X,Y,_), I != I'.
+%:- agent_position(I,T,X,Y,_), agent_position(I',T,X,Y,_), I != I'.
 
 %#show junction/2.
 %#show path/7.
 %#show connection/7.
 %#show agent_done/2.
-%#show agent_position/5.
+#show agent_position/5.
 %#show chosen_connection/9.
 #show agent_action/3.
